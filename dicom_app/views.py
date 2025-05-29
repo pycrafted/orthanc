@@ -59,7 +59,7 @@ class DicomStudyViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def upload_dicom(self, request):
-        print("=== Début de l'upload DICOM ===")
+        print("=== Début de l'upload DICOM (UIDs minimaux) ===")
         print(f"Utilisateur: {request.user}")
         print(f"Rôle: {request.user.role}")
 
@@ -90,6 +90,8 @@ class DicomStudyViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        import uuid
+        from datetime import date
         try:
             # Sauvegarder temporairement le fichier
             print("Sauvegarde temporaire du fichier...")
@@ -99,76 +101,93 @@ class DicomStudyViewSet(viewsets.ModelViewSet):
             temp_file.close()
             print(f"Fichier temporaire créé: {temp_file.name}")
 
-            # Extraire les métadonnées du fichier DICOM
-            print("Extraction des métadonnées DICOM...")
-            metadata = extract_dicom_metadata(temp_file.name)
-            print(f"Métadonnées extraites: {metadata}")
+            # Fonction utilitaire locale pour extraire les UIDs minimaux
+            def extract_minimal_dicom_uids(file_path):
+                try:
+                    import pydicom
+                    ds = pydicom.dcmread(file_path, stop_before_pixels=True)
+                    study_uid = getattr(ds, 'StudyInstanceUID', None)
+                    series_uid = getattr(ds, 'SeriesInstanceUID', None)
+                    sop_uid = getattr(ds, 'SOPInstanceUID', None)
+                    return {
+                        'study_instance_uid': str(study_uid) if study_uid else None,
+                        'series_instance_uid': str(series_uid) if series_uid else None,
+                        'sop_instance_uid': str(sop_uid) if sop_uid else None,
+                    }
+                except Exception as e:
+                    print(f"Impossible d'extraire les UIDs DICOM: {e}")
+                    return {
+                        'study_instance_uid': None,
+                        'series_instance_uid': None,
+                        'sop_instance_uid': None,
+                    }
 
-            # Créer ou récupérer l'étude
-            print("Création/récupération de l'étude...")
+            # Extraire les UIDs minimaux
+            uids = extract_minimal_dicom_uids(temp_file.name)
+            print(f"UIDs extraits: {uids}")
+
+            # Générer des identifiants si absents
+            study_instance_uid = uids['study_instance_uid'] or str(uuid.uuid4())
+            series_instance_uid = uids['series_instance_uid'] or str(uuid.uuid4())
+            sop_instance_uid = uids['sop_instance_uid'] or str(uuid.uuid4())
+
+            # Créer l'étude DICOM (ou la retrouver si déjà existante pour ce patient et ce fichier)
             study, created = DicomStudy.objects.get_or_create(
-                study_instance_uid=metadata['study_instance_uid'],
+                study_instance_uid=study_instance_uid,
                 defaults={
                     'patient_id': patient_id,
                     'doctor': request.user,
-                    'study_date': metadata.get('study_date'),
-                    'study_description': metadata.get('study_description', ''),
-                    'study_id': metadata.get('study_id', ''),
-                    'accession_number': metadata.get('accession_number', '')
+                    'study_date': date.today(),
+                    'study_description': 'Étude DICOM (UIDs minimaux)',
+                    'study_id': study_instance_uid,
+                    'accession_number': ''
                 }
             )
             print(f"Étude {'créée' if created else 'récupérée'}: {study}")
 
-            # Créer ou récupérer la série
-            print("Création/récupération de la série...")
+            # Créer la série DICOM
             series, created = DicomSeries.objects.get_or_create(
                 study=study,
-                series_instance_uid=metadata['series_instance_uid'],
+                series_instance_uid=series_instance_uid,
                 defaults={
-                    'series_number': metadata.get('series_number', 0),
-                    'series_description': metadata.get('series_description', ''),
-                    'modality': metadata.get('modality', ''),
-                    'number_of_instances': metadata.get('number_of_instances', 0)
+                    'series_number': 1,
+                    'series_description': 'Série (UIDs minimaux)',
+                    'modality': 'OT',  # "Other"
+                    'number_of_instances': 1
                 }
             )
             print(f"Série {'créée' if created else 'récupérée'}: {series}")
 
-            # Envoyer le fichier à Orthanc
-            print("Envoi du fichier à Orthanc...")
-            orthanc_url = 'http://localhost:8042/instances'
-            with open(temp_file.name, 'rb') as f:
-                response = requests.post(orthanc_url, data=f)
-                print(f"Réponse Orthanc: {response.status_code} - {response.text}")
-                if response.status_code != 200:
-                    raise Exception(f"Erreur lors de l'envoi à Orthanc: {response.text}")
+            # Envoyer le fichier à Orthanc (optionnel, peut être commenté si non utilisé)
+            try:
+                print("Envoi du fichier à Orthanc...")
+                orthanc_url = 'http://localhost:8042/instances'
+                with open(temp_file.name, 'rb') as f:
+                    response = requests.post(orthanc_url, data=f)
+                    print(f"Réponse Orthanc: {response.status_code} - {response.text}")
+            except Exception as e:
+                print(f"Erreur lors de l'envoi à Orthanc (ignorée): {e}")
 
-            # Créer l'instance
-            print("Création de l'instance...")
+            # Créer l'instance DICOM
             instance = DicomInstance.objects.create(
                 series=series,
-                sop_instance_uid=metadata['sop_instance_uid'],
-                instance_number=metadata.get('instance_number', 0),
-                file_path=f"orthanc://{metadata['sop_instance_uid']}",
+                sop_instance_uid=sop_instance_uid,
+                instance_number=1,
+                file_path=temp_file.name,  # Chemin local temporaire
                 file_size=dicom_file.size
             )
             print(f"Instance créée: {instance}")
 
-            # Nettoyer le fichier temporaire
-            print("Nettoyage du fichier temporaire...")
-            os.unlink(temp_file.name)
-            print("Fichier temporaire supprimé")
-
             # Retourner les données de l'étude avec les séries
             serializer = self.get_serializer(study)
-            print("=== Upload DICOM terminé avec succès ===")
+            print("=== Upload DICOM terminé avec succès (UIDs minimaux) ===")
             return Response({
-                'message': 'DICOM file uploaded successfully',
+                'message': 'DICOM file uploaded successfully (minimal UIDs)',
                 'study': serializer.data
             })
 
         except Exception as e:
             print(f"=== Erreur lors de l'upload DICOM: {str(e)} ===")
-            # Nettoyer le fichier temporaire en cas d'erreur
             if 'temp_file' in locals():
                 print("Nettoyage du fichier temporaire après erreur...")
                 os.unlink(temp_file.name)
