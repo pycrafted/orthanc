@@ -9,6 +9,8 @@ import StaffForm from './components/StaffForm';
 import SecretaryDashboard from './components/SecretaryDashboard';
 import DoctorDashboard from './components/DoctorDashboard';
 import PatientMedicalRecord from './components/PatientMedicalRecord';
+import PatientDashboard from './components/PatientDashboard';
+import PatientAppointmentRequest from './components/PatientAppointmentRequest';
 
 const PrivateRoute = ({ children, allowedRoles }) => {
     const token = localStorage.getItem('access_token');
@@ -101,8 +103,20 @@ function App() {
                     </PrivateRoute>
                 } />
                 <Route path="/patient/:patientId" element={
-                    <PrivateRoute allowedRoles={['DOCTOR']}>
+                    <PrivateRoute allowedRoles={['DOCTOR', 'PATIENT']}>
                         <PatientMedicalRecord />
+                    </PrivateRoute>
+                } />
+
+                {/* Routes Patient */}
+                <Route path="/patient/dashboard" element={
+                    <PrivateRoute allowedRoles={['PATIENT']}>
+                        <PatientDashboard />
+                    </PrivateRoute>
+                } />
+                <Route path="/patient/appointment-request" element={
+                    <PrivateRoute allowedRoles={['PATIENT']}>
+                        <PatientAppointmentRequest />
                     </PrivateRoute>
                 } />
 

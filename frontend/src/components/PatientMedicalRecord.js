@@ -175,6 +175,8 @@ const PatientMedicalRecord = () => {
         treatment_plan: '',
         notes: ''
     });
+    const [dicomMessage, setDicomMessage] = useState(null);
+    const userRole = localStorage.getItem('user_role');
 
     useEffect(() => {
         fetchData();
@@ -284,8 +286,9 @@ const PatientMedicalRecord = () => {
 
     const handleUploadDicom = async (e) => {
         e.preventDefault();
+        setDicomMessage(null);
         if (!selectedFile) {
-            setError('Veuillez sélectionner un fichier DICOM');
+            setDicomMessage({ type: 'error', text: 'Veuillez sélectionner un fichier DICOM' });
             return;
         }
         try {
@@ -297,7 +300,7 @@ const PatientMedicalRecord = () => {
             const formData = new FormData();
             formData.append('file', selectedFile);
             formData.append('patient', patientId);
-            await axios.post('http://localhost:8000/api/dicom/studies/upload_dicom/', formData, {
+            const response = await axios.post('http://localhost:8000/api/dicom/studies/upload_dicom/', formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
@@ -305,9 +308,14 @@ const PatientMedicalRecord = () => {
             });
             setSelectedFile(null);
             setShowAddDicom(false);
+            setDicomMessage({ type: 'success', text: response.data.message || 'Image DICOM uploadée avec succès.' });
             await fetchData();
         } catch (error) {
-            setError('Erreur lors de l\'upload DICOM');
+            let msg = 'Erreur lors de l\'upload DICOM';
+            if (error.response && error.response.data && error.response.data.error) {
+                msg = error.response.data.error;
+            }
+            setDicomMessage({ type: 'error', text: msg });
         }
     };
 
@@ -470,14 +478,16 @@ const PatientMedicalRecord = () => {
 
                     {activeTab === 'records' && (
                         <>
-                            <div style={styles.buttonGroup}>
-                                <button
-                                    onClick={() => setShowAddRecord(true)}
-                                    style={styles.primaryButton}
-                                >
-                                    Nouvelle consultation
-                                </button>
-                            </div>
+                            {userRole !== 'PATIENT' && (
+                                <div style={styles.buttonGroup}>
+                                    <button
+                                        onClick={() => setShowAddRecord(true)}
+                                        style={styles.primaryButton}
+                                    >
+                                        Nouvelle consultation
+                                    </button>
+                                </div>
+                            )}
                             <div style={styles.tableContainer}>
                                 <table style={styles.table}>
                                     <thead>
@@ -499,12 +509,14 @@ const PatientMedicalRecord = () => {
                                                 <td style={styles.tableCell}>{record.diagnosis}</td>
                                                 <td style={styles.tableCell}>{record.treatment_plan}</td>
                                                 <td style={styles.tableCell}>
-                                                    <button
-                                                        onClick={() => navigate(`/medical-records/${record.id}`)}
-                                                        style={styles.secondaryButton}
-                                                    >
-                                                        Voir détails
-                                                    </button>
+                                                    {userRole !== 'PATIENT' && (
+                                                        <button
+                                                            onClick={() => navigate(`/medical-records/${record.id}`)}
+                                                            style={styles.secondaryButton}
+                                                        >
+                                                            Voir détails
+                                                        </button>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}
@@ -516,14 +528,16 @@ const PatientMedicalRecord = () => {
 
                     {activeTab === 'dicom' && (
                         <>
-                            <div style={styles.buttonGroup}>
-                                <button
-                                    onClick={() => setShowAddDicom(true)}
-                                    style={styles.primaryButton}
-                                >
-                                    Ajouter une image DICOM
-                                </button>
-                            </div>
+                            {userRole !== 'PATIENT' && (
+                                <div style={styles.buttonGroup}>
+                                    <button
+                                        onClick={() => setShowAddDicom(true)}
+                                        style={styles.primaryButton}
+                                    >
+                                        Ajouter une image DICOM
+                                    </button>
+                                </div>
+                            )}
                             <div style={styles.tableContainer}>
                                 <table style={styles.table}>
                                     <thead>
@@ -548,12 +562,13 @@ const PatientMedicalRecord = () => {
                                                         >
                                                             Voir l'image
                                                         </button>
-                                                        <button
-                                                            onClick={() => handleDeleteDicom(study.id)}
-                                                            style={{...styles.secondaryButton, backgroundColor: '#dc3545'}}
-                                                        >
-                                                            Supprimer
-                                                        </button>
+                                                        {userRole !== 'PATIENT' && (
+                                                            <button
+                                                                onClick={() => handleDeleteDicom(study.id)}
+                                                                style={{...styles.secondaryButton, backgroundColor: '#dc3545'}}>
+                                                                Supprimer
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>
@@ -566,7 +581,7 @@ const PatientMedicalRecord = () => {
                 </div>
             </div>
 
-            {showAddRecord && (
+            {showAddRecord && userRole !== 'PATIENT' && (
                 <div style={styles.modal}>
                     <div style={styles.form}>
                         <h2 style={styles.sectionTitle}>Nouvelle consultation</h2>
@@ -613,8 +628,7 @@ const PatientMedicalRecord = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowAddRecord(false)}
-                                    style={{...styles.secondaryButton, backgroundColor: '#6c757d'}}
-                                >
+                                    style={{...styles.secondaryButton, backgroundColor: '#6c757d'}}>
                                     Annuler
                                 </button>
                             </div>
@@ -623,7 +637,7 @@ const PatientMedicalRecord = () => {
                 </div>
             )}
 
-            {showAddDicom && (
+            {showAddDicom && userRole !== 'PATIENT' && (
                 <div style={styles.modal}>
                     <div style={styles.form}>
                         <h2 style={styles.sectionTitle}>Ajouter une image DICOM</h2>
@@ -638,15 +652,19 @@ const PatientMedicalRecord = () => {
                                     required
                                 />
                             </div>
+                            {dicomMessage && (
+                                <div style={{ color: dicomMessage.type === 'error' ? '#dc3545' : '#2ecc71', marginBottom: 10 }}>
+                                    {dicomMessage.text}
+                                </div>
+                            )}
                             <div style={styles.buttonGroup}>
                                 <button type="submit" style={styles.primaryButton}>
                                     Upload
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => setShowAddDicom(false)}
-                                    style={{...styles.secondaryButton, backgroundColor: '#6c757d'}}
-                                >
+                                    onClick={() => { setShowAddDicom(false); setDicomMessage(null); }}
+                                    style={{...styles.secondaryButton, backgroundColor: '#6c757d'}}>
                                     Annuler
                                 </button>
                             </div>

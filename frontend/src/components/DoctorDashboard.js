@@ -324,18 +324,7 @@ const DoctorDashboard = () => {
                                     <td style={styles.tableCell}>
                                         {appointment.status === 'PENDING' && (
                                             <div style={styles.buttonGroup}>
-                                                <button
-                                                    onClick={() => handleConfirmAppointment(appointment.id)}
-                                                    style={styles.confirmButton}
-                                                >
-                                                    Confirmer
-                                                </button>
-                                                <button
-                                                    onClick={() => handleCancelAppointment(appointment.id)}
-                                                    style={styles.cancelButton}
-                                                >
-                                                    Annuler
-                                                </button>
+                                                {/* Aucun bouton pour le médecin */}
                                             </div>
                                         )}
                                     </td>
