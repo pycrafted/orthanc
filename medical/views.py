@@ -228,6 +228,14 @@ class MedicalRecordViewSet(viewsets.ModelViewSet):
         # Les secrétaires n'ont pas accès aux dossiers médicaux
         return MedicalRecord.objects.none()
 
+    def perform_create(self, serializer):
+        medical_record = serializer.save()
+        # Créer la relation patient-médecin si elle n'existe pas
+        PatientDoctor.objects.get_or_create(
+            patient=medical_record.patient,
+            doctor=medical_record.doctor
+        )
+
     @swagger_auto_schema(
         operation_description="Liste des dossiers médicaux selon le rôle de l'utilisateur connecté",
         responses={

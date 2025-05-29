@@ -33,6 +33,7 @@ const Login = () => {
             });
 
             // Stocker le rôle de l'utilisateur
+            localStorage.setItem('user_id', userResponse.data.id);
             localStorage.setItem('user_role', userResponse.data.role);
 
             // Rediriger selon le rôle

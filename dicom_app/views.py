@@ -62,7 +62,7 @@ class DicomStudyViewSet(viewsets.ModelViewSet):
         print("=== Début de l'upload DICOM ===")
         print(f"Utilisateur: {request.user}")
         print(f"Rôle: {request.user.role}")
-        
+
         if not CanUploadDicom().has_permission(request, self):
             print("Permission refusée pour l'upload")
             return Response(
@@ -72,17 +72,17 @@ class DicomStudyViewSet(viewsets.ModelViewSet):
 
         dicom_file = request.FILES.get('file')
         patient_id = request.POST.get('patient')
-        
+
         print(f"Fichier reçu: {dicom_file.name if dicom_file else 'None'}")
         print(f"ID du patient: {patient_id}")
-        
+
         if not dicom_file:
             print("Erreur: Aucun fichier fourni")
             return Response(
                 {'error': 'No file provided'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-            
+
         if not patient_id:
             print("Erreur: ID du patient manquant")
             return Response(
@@ -103,7 +103,7 @@ class DicomStudyViewSet(viewsets.ModelViewSet):
             print("Extraction des métadonnées DICOM...")
             metadata = extract_dicom_metadata(temp_file.name)
             print(f"Métadonnées extraites: {metadata}")
-            
+
             # Créer ou récupérer l'étude
             print("Création/récupération de l'étude...")
             study, created = DicomStudy.objects.get_or_create(
