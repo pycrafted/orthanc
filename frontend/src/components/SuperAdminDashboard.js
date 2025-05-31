@@ -183,97 +183,99 @@ const SuperAdminDashboard = () => {
     };
 
     const renderHospitals = () => (
-        <div>
-            <h3>Hôpitaux</h3>
-            <button onClick={() => navigate('/super-admin/hospitals/add')}>Ajouter un hôpital</button>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Email</th>
-                        <th>Téléphone</th>
-                        <th>Adresse</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {hospitals.map(hospital => (
-                        <tr key={hospital.id}>
-                            <td>{hospital.name}</td>
-                            <td>{hospital.email}</td>
-                            <td>{hospital.phone}</td>
-                            <td>{hospital.address}</td>
-                            <td>{hospital.is_active ? 'Actif' : 'Inactif'}</td>
-                            <td>
-                                <button onClick={() => navigate(`/super-admin/hospitals/${hospital.id}`)}>Modifier</button>
-                                <button onClick={() => handleToggleStatus(hospital.id, !hospital.is_active)}>
-                                    {hospital.is_active ? 'Désactiver' : 'Activer'}
-                                </button>
-                                <button onClick={() => handleDelete(hospital.id)}>Supprimer</button>
-                            </td>
+        <div className="card-cyber neon-border mb-8">
+            <h3 className="text-2xl neon-text font-cyber mb-6 glitch-effect" data-text="Hôpitaux">Hôpitaux</h3>
+            <button className="btn-cyber mb-4" onClick={() => navigate('/super-admin/hospitals/add')}>Ajouter un hôpital</button>
+            <div className="overflow-x-auto">
+                <table className="w-full neon-border bg-dark.light text-text.light rounded-xl overflow-hidden">
+                    <thead>
+                        <tr>
+                            <th className="py-2 px-4 neon-text">Nom</th>
+                            <th className="py-2 px-4 neon-text">Email</th>
+                            <th className="py-2 px-4 neon-text">Téléphone</th>
+                            <th className="py-2 px-4 neon-text">Adresse</th>
+                            <th className="py-2 px-4 neon-text">Statut</th>
+                            <th className="py-2 px-4 neon-text">Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {hospitals.map(hospital => (
+                            <tr key={hospital.id} className="hover:bg-dark.lighter transition">
+                                <td className="py-2 px-4">{hospital.name}</td>
+                                <td className="py-2 px-4">{hospital.email}</td>
+                                <td className="py-2 px-4">{hospital.phone}</td>
+                                <td className="py-2 px-4">{hospital.address}</td>
+                                <td className="py-2 px-4">{hospital.is_active ? 'Actif' : 'Inactif'}</td>
+                                <td className="py-2 px-4 flex flex-col gap-2">
+                                    <button className="btn-cyber" onClick={() => navigate(`/super-admin/hospitals/${hospital.id}`)}>Modifier</button>
+                                    <button className="btn-cyber" onClick={() => handleToggleStatus(hospital.id, !hospital.is_active)}>
+                                        {hospital.is_active ? 'Désactiver' : 'Activer'}
+                                    </button>
+                                    <button className="btn-cyber" onClick={() => handleDelete(hospital.id)}>Supprimer</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 
     return (
-        <div>
-            <h1>Tableau de bord Super Admin</h1>
-            <button onClick={handleLogout}>Déconnexion</button>
-
-            <div>
-                <button onClick={() => setActiveTab('hospitals')}>Hôpitaux</button>
-                <button onClick={() => setActiveTab('users')}>Utilisateurs</button>
+        <div className="min-h-screen bg-dark.lighter p-8 font-sans">
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl neon-text font-cyber glitch-effect" data-text="Tableau de bord Super Admin">Tableau de bord Super Admin</h1>
+                <button className="btn-cyber" onClick={handleLogout}>Déconnexion</button>
             </div>
-
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-
+            <div className="flex gap-4 mb-8">
+                <button className={`btn-cyber ${activeTab === 'hospitals' ? 'bg-primary.dark' : ''}`} onClick={() => setActiveTab('hospitals')}>Hôpitaux</button>
+                <button className={`btn-cyber ${activeTab === 'users' ? 'bg-primary.dark' : ''}`} onClick={() => setActiveTab('users')}>Utilisateurs</button>
+            </div>
+            {error && <p className="text-center font-bold mb-4 text-red-500">{error}</p>}
             {activeTab === 'hospitals' && renderHospitals()}
-
             {activeTab === 'users' && (
-                <div>
-                    <h2>Liste des Utilisateurs</h2>
-                    <button onClick={() => navigate('/admin/users/add')}>Ajouter un utilisateur</button>
+                <div className="card-cyber neon-border">
+                    <h2 className="text-2xl neon-text font-cyber mb-6 glitch-effect" data-text="Liste des Utilisateurs">Liste des Utilisateurs</h2>
+                    <button className="btn-cyber mb-4" onClick={() => navigate('/admin/users/add')}>Ajouter un utilisateur</button>
                     {users.length > 0 ? (
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Nom d'utilisateur</th>
-                                    <th>Email</th>
-                                    <th>Rôle</th>
-                                    <th>Hôpital</th>
-                                    <th>Statut</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {users.map(user => (
-                                    <tr key={user.id}>
-                                        <td>{user.username}</td>
-                                        <td>{user.email}</td>
-                                        <td>{user.role}</td>
-                                        <td>{user.hospital?.name || 'N/A'}</td>
-                                        <td>{user.is_active ? 'Actif' : 'Inactif'}</td>
-                                        <td>
-                                            <button onClick={() => navigate(`/admin/users/edit/${user.id}`)}>
-                                                Modifier
-                                            </button>
-                                            <button onClick={() => handleToggleUserStatus(user.id, !user.is_active)}>
-                                                {user.is_active ? 'Désactiver' : 'Activer'}
-                                            </button>
-                                            <button onClick={() => handleDeleteUser(user.id)}>
-                                                Supprimer
-                                            </button>
-                                        </td>
+                        <div className="overflow-x-auto">
+                            <table className="w-full neon-border bg-dark.light text-text.light rounded-xl overflow-hidden">
+                                <thead>
+                                    <tr>
+                                        <th className="py-2 px-4 neon-text">Nom d'utilisateur</th>
+                                        <th className="py-2 px-4 neon-text">Email</th>
+                                        <th className="py-2 px-4 neon-text">Rôle</th>
+                                        <th className="py-2 px-4 neon-text">Hôpital</th>
+                                        <th className="py-2 px-4 neon-text">Statut</th>
+                                        <th className="py-2 px-4 neon-text">Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {users.map(user => (
+                                        <tr key={user.id} className="hover:bg-dark.lighter transition">
+                                            <td className="py-2 px-4">{user.username}</td>
+                                            <td className="py-2 px-4">{user.email}</td>
+                                            <td className="py-2 px-4">{user.role}</td>
+                                            <td className="py-2 px-4">{user.hospital?.name || 'N/A'}</td>
+                                            <td className="py-2 px-4">{user.is_active ? 'Actif' : 'Inactif'}</td>
+                                            <td className="py-2 px-4 flex flex-col gap-2">
+                                                <button className="btn-cyber" onClick={() => navigate(`/admin/users/edit/${user.id}`)}>
+                                                    Modifier
+                                                </button>
+                                                <button className="btn-cyber" onClick={() => handleToggleUserStatus(user.id, !user.is_active)}>
+                                                    {user.is_active ? 'Désactiver' : 'Activer'}
+                                                </button>
+                                                <button className="btn-cyber" onClick={() => handleDeleteUser(user.id)}>
+                                                    Supprimer
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     ) : (
-                        <p>Aucun utilisateur trouvé</p>
+                        <p className="text-center">Aucun utilisateur trouvé</p>
                     )}
                 </div>
             )}

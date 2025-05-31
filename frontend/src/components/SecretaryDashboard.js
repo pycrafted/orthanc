@@ -180,184 +180,173 @@ const SecretaryDashboard = () => {
         }
     };
 
-    if (loading) return <div>Chargement...</div>;
-    if (error) return <div>{error}</div>;
+    if (loading) return <div className="min-h-screen flex items-center justify-center bg-dark font-sans text-xl text-gray-400">Chargement...</div>;
+    if (error) return <div className="min-h-screen flex items-center justify-center bg-dark font-sans"><div className="text-center font-bold text-red-500 text-lg p-8 bg-dark.light neon-border rounded-xl">{error}</div></div>;
 
     return (
-        <div>
-            <h1>Tableau de bord Secrétaire</h1>
+        <div className="min-h-screen bg-dark.lighter p-8 font-sans">
+            <h1 className="text-3xl neon-text font-cyber mb-10 glitch-effect" data-text="Tableau de bord Secrétaire">Tableau de bord Secrétaire</h1>
 
-            <h2>Rendez-vous</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Heure</th>
-                        <th>Patient</th>
-                        <th>Médecin</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {appointments.map(appointment => (
-                        <tr key={appointment.id}>
-                            <td>{new Date(appointment.date).toLocaleDateString()}</td>
-                            <td>{appointment.start_time}</td>
-                            <td>
-                                {patients.find(p => p.id === appointment.patient)?.first_name} {patients.find(p => p.id === appointment.patient)?.last_name}
-                            </td>
-                            <td>
-                                {doctors.find(d => d.id === appointment.doctor)?.first_name} {doctors.find(d => d.id === appointment.doctor)?.last_name}
-                            </td>
-                            <td>{appointment.status}</td>
-                            <td>
-                                {appointment.status === 'PENDING' && (
-                                    <>
-                                        <button onClick={() => handleConfirmAppointment(appointment.id)}>
-                                            Confirmer
-                                        </button>
-                                        <button onClick={() => handleCancelAppointment(appointment.id)}>
-                                            Annuler
-                                        </button>
-                                    </>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            <h2>Patients</h2>
-            <button onClick={() => setShowAddPatientForm(true)}>Ajouter un patient</button>
-            {showAddPatientForm && (
-                <form onSubmit={handleAddPatient}>
-                    <h3>Nouveau patient</h3>
-                    <div>
-                        <label>Nom d'utilisateur:</label>
-                        <input
-                            type="text"
-                            value={newPatient.username}
-                            onChange={(e) => setNewPatient({...newPatient, username: e.target.value})}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Email:</label>
-                        <input
-                            type="email"
-                            value={newPatient.email}
-                            onChange={(e) => setNewPatient({...newPatient, email: e.target.value})}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Prénom:</label>
-                        <input
-                            type="text"
-                            value={newPatient.first_name}
-                            onChange={(e) => setNewPatient({...newPatient, first_name: e.target.value})}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Nom:</label>
-                        <input
-                            type="text"
-                            value={newPatient.last_name}
-                            onChange={(e) => setNewPatient({...newPatient, last_name: e.target.value})}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Téléphone:</label>
-                        <input
-                            type="tel"
-                            value={newPatient.phone}
-                            onChange={(e) => setNewPatient({...newPatient, phone: e.target.value})}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Mot de passe:</label>
-                        <input
-                            type="password"
-                            value={newPatient.password}
-                            onChange={(e) => setNewPatient({...newPatient, password: e.target.value})}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Médecins:</label>
-                        <select
-                            multiple
-                            value={newPatient.selectedDoctors}
-                            onChange={(e) => setNewPatient({
-                                ...newPatient,
-                                selectedDoctors: Array.from(e.target.selectedOptions, option => option.value)
-                            })}
-                            required
-                        >
-                            {doctors.map(doctor => (
-                                <option key={doctor.id} value={doctor.id}>
-                                    {doctor.first_name} {doctor.last_name} - {doctor.specialty}
-                                </option>
+            <div className="card-cyber neon-border mb-10">
+                <h2 className="text-2xl neon-text font-cyber mb-6 glitch-effect" data-text="Rendez-vous">Rendez-vous</h2>
+                <div className="overflow-x-auto">
+                    <table className="w-full neon-border bg-dark.light text-text.light rounded-xl overflow-hidden">
+                        <thead>
+                            <tr>
+                                <th className="py-2 px-4 neon-text">Date</th>
+                                <th className="py-2 px-4 neon-text">Heure</th>
+                                <th className="py-2 px-4 neon-text">Patient</th>
+                                <th className="py-2 px-4 neon-text">Médecin</th>
+                                <th className="py-2 px-4 neon-text">Statut</th>
+                                <th className="py-2 px-4 neon-text">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {appointments.map(appointment => (
+                                <tr key={appointment.id} className="hover:bg-dark.lighter transition">
+                                    <td className="py-2 px-4">{new Date(appointment.date).toLocaleDateString()}</td>
+                                    <td className="py-2 px-4">{appointment.start_time}</td>
+                                    <td className="py-2 px-4">
+                                        {patients.find(p => p.id === appointment.patient)?.first_name} {patients.find(p => p.id === appointment.patient)?.last_name}
+                                    </td>
+                                    <td className="py-2 px-4">
+                                        {doctors.find(d => d.id === appointment.doctor)?.first_name} {doctors.find(d => d.id === appointment.doctor)?.last_name}
+                                    </td>
+                                    <td className="py-2 px-4">
+                                        <span className={`px-3 py-1 rounded font-bold ${appointment.status === 'PENDING' ? 'bg-yellow-500 text-white' : appointment.status === 'CONFIRMED' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>{appointment.status}</span>
+                                    </td>
+                                    <td className="py-2 px-4 flex gap-2">
+                                        {appointment.status === 'PENDING' && (
+                                            <>
+                                                <button className="btn-cyber" onClick={() => handleConfirmAppointment(appointment.id)}>
+                                                    Confirmer
+                                                </button>
+                                                <button className="btn-cyber bg-red-700 hover:bg-red-900" onClick={() => handleCancelAppointment(appointment.id)}>
+                                                    Annuler
+                                                </button>
+                                            </>
+                                        )}
+                                    </td>
+                                </tr>
                             ))}
-                        </select>
-                    </div>
-                    <button type="submit">Ajouter</button>
-                    <button type="button" onClick={() => setShowAddPatientForm(false)}>Annuler</button>
-                </form>
-            )}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Email</th>
-                        <th>Téléphone</th>
-                        <th>Médecins associés</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {patients.map(patient => (
-                        <tr key={patient.id}>
-                            <td>{patient.first_name} {patient.last_name}</td>
-                            <td>{patient.email}</td>
-                            <td>{patient.phone}</td>
-                            <td>
-                                {patient.doctors?.map(doctor => (
-                                    <span key={doctor.id}>
-                                        {doctor.first_name} {doctor.last_name}
-                                        {doctor.specialty ? ` (${doctor.specialty})` : ''}
-                                    </span>
-                                ))}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-            <h2>Médecins</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Email</th>
-                        <th>Téléphone</th>
-                        <th>Spécialité</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {doctors.map(doctor => (
-                        <tr key={doctor.id}>
-                            <td>{doctor.first_name} {doctor.last_name}</td>
-                            <td>{doctor.email}</td>
-                            <td>{doctor.phone}</td>
-                            <td>{doctor.specialty}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div className="card-cyber neon-border">
+                <h2 className="text-2xl neon-text font-cyber mb-6 glitch-effect" data-text="Patients">Patients</h2>
+                <button className="btn-cyber mb-4" onClick={() => setShowAddPatientForm(true)}>Ajouter un patient</button>
+                {showAddPatientForm && (
+                    <form onSubmit={handleAddPatient} className="bg-dark.lighter neon-border p-8 rounded-xl mb-8">
+                        <h3 className="text-xl neon-text font-cyber mb-4 glitch-effect" data-text="Nouveau patient">Nouveau patient</h3>
+                        <div className="mb-4">
+                            <label className="block neon-text mb-2 font-bold">Nom d'utilisateur</label>
+                            <input
+                                type="text"
+                                value={newPatient.username}
+                                onChange={(e) => setNewPatient({...newPatient, username: e.target.value})}
+                                required
+                                className="input-cyber"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block neon-text mb-2 font-bold">Email</label>
+                            <input
+                                type="email"
+                                value={newPatient.email}
+                                onChange={(e) => setNewPatient({...newPatient, email: e.target.value})}
+                                required
+                                className="input-cyber"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block neon-text mb-2 font-bold">Prénom</label>
+                            <input
+                                type="text"
+                                value={newPatient.first_name}
+                                onChange={(e) => setNewPatient({...newPatient, first_name: e.target.value})}
+                                required
+                                className="input-cyber"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block neon-text mb-2 font-bold">Nom</label>
+                            <input
+                                type="text"
+                                value={newPatient.last_name}
+                                onChange={(e) => setNewPatient({...newPatient, last_name: e.target.value})}
+                                required
+                                className="input-cyber"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block neon-text mb-2 font-bold">Téléphone</label>
+                            <input
+                                type="text"
+                                value={newPatient.phone}
+                                onChange={(e) => setNewPatient({...newPatient, phone: e.target.value})}
+                                required
+                                className="input-cyber"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block neon-text mb-2 font-bold">Mot de passe</label>
+                            <input
+                                type="password"
+                                value={newPatient.password}
+                                onChange={(e) => setNewPatient({...newPatient, password: e.target.value})}
+                                required
+                                className="input-cyber"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block neon-text mb-2 font-bold">Médecins associés</label>
+                            <select
+                                multiple
+                                value={newPatient.selectedDoctors}
+                                onChange={e => setNewPatient({...newPatient, selectedDoctors: Array.from(e.target.selectedOptions, option => option.value)})}
+                                className="input-cyber"
+                                required
+                            >
+                                {doctors.map(doc => (
+                                    <option key={doc.id} value={doc.id}>
+                                        {doc.first_name} {doc.last_name} {doc.specialty ? `- ${doc.specialty}` : ''}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="flex gap-4 mt-6">
+                            <button type="submit" className="btn-cyber w-full">Ajouter</button>
+                            <button type="button" className="btn-cyber w-full bg-red-700 hover:bg-red-900" onClick={() => setShowAddPatientForm(false)}>Annuler</button>
+                        </div>
+                    </form>
+                )}
+                <div className="overflow-x-auto">
+                    <table className="w-full neon-border bg-dark.light text-text.light rounded-xl overflow-hidden">
+                        <thead>
+                            <tr>
+                                <th className="py-2 px-4 neon-text">Nom d'utilisateur</th>
+                                <th className="py-2 px-4 neon-text">Email</th>
+                                <th className="py-2 px-4 neon-text">Prénom</th>
+                                <th className="py-2 px-4 neon-text">Nom</th>
+                                <th className="py-2 px-4 neon-text">Téléphone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {patients.map(patient => (
+                                <tr key={patient.id} className="hover:bg-dark.lighter transition">
+                                    <td className="py-2 px-4">{patient.username}</td>
+                                    <td className="py-2 px-4">{patient.email}</td>
+                                    <td className="py-2 px-4">{patient.first_name}</td>
+                                    <td className="py-2 px-4">{patient.last_name}</td>
+                                    <td className="py-2 px-4">{patient.phone}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     );
 };

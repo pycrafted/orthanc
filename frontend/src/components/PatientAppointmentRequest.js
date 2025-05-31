@@ -161,80 +161,81 @@ const PatientAppointmentRequest = () => {
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.title}>Demander un rendez-vous</div>
-            <form onSubmit={handleSubmit}>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Hôpital *</label>
-                    <select
-                        value={hospital}
-                        onChange={e => { setHospital(e.target.value); setDoctor(''); }}
-                        style={styles.select}
-                        required
-                    >
-                        <option value="">Sélectionner un hôpital</option>
-                        {hospitals.map(h => (
-                            <option key={h.id} value={h.id}>{h.name}</option>
-                        ))}
-                    </select>
+        <div className="min-h-screen flex items-center justify-center bg-dark font-sans">
+            <div className="bg-dark.light neon-border p-10 rounded-xl shadow-xl w-full max-w-lg">
+                <div className="text-3xl neon-text font-cyber mb-8 glitch-effect text-center" data-text="Demander un rendez-vous">
+                    Demander un rendez-vous
                 </div>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Médecin *</label>
-                    <select
-                        value={doctor}
-                        onChange={e => setDoctor(e.target.value)}
-                        style={styles.select}
-                        required
-                        disabled={!hospital || doctors.length === 0}
-                    >
-                        <option value="">Sélectionner un médecin</option>
-                        {doctors.map(doc => (
-                            <option key={doc.id} value={doc.id}>
-                                {doc.first_name} {doc.last_name} {doc.specialty ? `- ${doc.specialty}` : ''}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Date *</label>
-                    <input
-                        type="date"
-                        value={date}
-                        onChange={e => setDate(e.target.value)}
-                        style={styles.input}
-                        required
-                    />
-                </div>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Heure *</label>
-                    <input
-                        type="time"
-                        value={startTime}
-                        onChange={e => setStartTime(e.target.value)}
-                        style={styles.input}
-                        required
-                    />
-                </div>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Motif (optionnel)</label>
-                    <input
-                        type="text"
-                        value={reason}
-                        onChange={e => setReason(e.target.value)}
-                        style={styles.input}
-                        placeholder="Motif du rendez-vous"
-                    />
-                </div>
-                {message && (
-                    <div style={{
-                        ...styles.message,
-                        color: message.type === 'error' ? '#dc3545' : '#2ecc71'
-                    }}>{message.text}</div>
-                )}
-                <button type="submit" style={styles.button} disabled={loading}>
-                    Envoyer la demande
-                </button>
-            </form>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-6">
+                        <label className="block neon-text mb-2 font-bold">Hôpital *</label>
+                        <select
+                            value={hospital}
+                            onChange={e => { setHospital(e.target.value); setDoctor(''); }}
+                            className="input-cyber"
+                            required
+                        >
+                            <option value="">Sélectionner un hôpital</option>
+                            {hospitals.map(h => (
+                                <option key={h.id} value={h.id}>{h.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="mb-6">
+                        <label className="block neon-text mb-2 font-bold">Médecin *</label>
+                        <select
+                            value={doctor}
+                            onChange={e => setDoctor(e.target.value)}
+                            className="input-cyber"
+                            required
+                            disabled={!hospital || doctors.length === 0}
+                        >
+                            <option value="">Sélectionner un médecin</option>
+                            {doctors.map(doc => (
+                                <option key={doc.id} value={doc.id}>
+                                    {doc.first_name} {doc.last_name} {doc.specialty ? `- ${doc.specialty}` : ''}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="mb-6">
+                        <label className="block neon-text mb-2 font-bold">Date *</label>
+                        <input
+                            type="date"
+                            value={date}
+                            onChange={e => setDate(e.target.value)}
+                            className="input-cyber"
+                            required
+                        />
+                    </div>
+                    <div className="mb-6">
+                        <label className="block neon-text mb-2 font-bold">Heure *</label>
+                        <input
+                            type="time"
+                            value={startTime}
+                            onChange={e => setStartTime(e.target.value)}
+                            className="input-cyber"
+                            required
+                        />
+                    </div>
+                    <div className="mb-8">
+                        <label className="block neon-text mb-2 font-bold">Motif (optionnel)</label>
+                        <input
+                            type="text"
+                            value={reason}
+                            onChange={e => setReason(e.target.value)}
+                            className="input-cyber"
+                            placeholder="Motif du rendez-vous"
+                        />
+                    </div>
+                    {message && (
+                        <div className={`text-center font-bold mb-4 ${message.type === 'error' ? 'text-red-500' : 'text-green-400'}`}>{message.text}</div>
+                    )}
+                    <button type="submit" className="btn-cyber w-full" disabled={loading}>
+                        Envoyer la demande
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };

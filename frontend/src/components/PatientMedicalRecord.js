@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import DicomViewer from './DicomViewer';
 
 const styles = {
     container: {
@@ -177,6 +178,8 @@ const PatientMedicalRecord = () => {
     });
     const [dicomMessage, setDicomMessage] = useState(null);
     const userRole = localStorage.getItem('user_role');
+    const [selectedDicomStudyUID, setSelectedDicomStudyUID] = useState(null);
+    const [showDicomViewer, setShowDicomViewer] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -322,25 +325,14 @@ const PatientMedicalRecord = () => {
     const handleViewDicom = (studyId) => {
         console.log('Tentative de visualisation de l\'étude DICOM:', studyId);
         try {
-            console.log('Recherche de l\'étude dans les données:', dicomStudies);
             const study = dicomStudies.find(study => study.id === studyId);
-            console.log('Étude trouvée:', study);
-            
             if (study?.study_instance_uid) {
-                console.log('Redirection vers l\'OHIF viewer avec l\'étude:', study.study_instance_uid);
-                const viewerUrl = `http://localhost:8042/ohif/viewer?StudyInstanceUIDs=${study.study_instance_uid}`;
-                console.log('URL du viewer:', viewerUrl);
-                window.open(viewerUrl, '_blank');
+                setSelectedDicomStudyUID(study.study_instance_uid);
+                setShowDicomViewer(true);
             } else {
-                console.error('Pas d\'StudyInstanceUID trouvé pour l\'étude:', studyId);
                 setError('Impossible de trouver les informations de l\'étude DICOM');
             }
         } catch (error) {
-            console.error('Erreur détaillée lors de la visualisation DICOM:', {
-                message: error.message,
-                studyId,
-                dicomStudies
-            });
             setError('Une erreur est survenue lors de l\'ouverture de l\'image DICOM');
         }
     };
@@ -669,6 +661,15 @@ const PatientMedicalRecord = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {showDicomViewer && (
+                <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: '90vw', height: '90vh', background: '#222', borderRadius: 8, boxShadow: '0 0 24px #000', position: 'relative' }}>
+                        <button onClick={() => setShowDicomViewer(false)} style={{ position: 'absolute', top: 16, right: 16, zIndex: 10, background: '#fff', color: '#222', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer', fontWeight: 'bold' }}>Fermer</button>
+                        <DicomViewer studyInstanceUID={selectedDicomStudyUID} />
                     </div>
                 </div>
             )}

@@ -43,7 +43,8 @@ class HospitalViewSet(viewsets.ModelViewSet):
             return Hospital.objects.all()
         elif user.role == 'HOSPITAL_ADMIN':
             return Hospital.objects.filter(id=user.hospital.id)
-        return Hospital.objects.none()
+        # TOUS les autres rôles (patients, secrétaires, etc.) voient tous les hôpitaux
+        return Hospital.objects.all()
 
     def get_object(self):
         obj = super().get_object()
@@ -84,7 +85,8 @@ class UserViewSet(viewsets.ModelViewSet):
                 Q(id=user.id)
             )
         else:
-            queryset = User.objects.filter(id=user.id)
+            # Pour les patients et autres rôles, on veut pouvoir lister les médecins d'un hôpital
+            queryset = User.objects.all()
 
         # Appliquer les filtres de requête
         role = self.request.query_params.get('role', None)

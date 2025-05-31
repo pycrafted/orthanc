@@ -1,0 +1,17 @@
+/* === Cyberpunk Utility Classes === */
+.neon-border { box-shadow: 0 0 8px #8A2BE2, 0 0 16px #39FF14; border: 2px solid #8A2BE2; }
+.neon-text { color: #39FF14; text-shadow: 0 0 4px #39FF14, 0 0 8px #8A2BE2; }
+.glitch-effect { position: relative; color: #fff; font-family: 'Share Tech Mono', monospace; }
+.glitch-effect::before, .glitch-effect::after { content: attr(data-text); position: absolute; left: 0; width: 100%; overflow: hidden; color: #FF00FF; opacity: 0.7; z-index: -1; }
+.glitch-effect::before { top: -2px; left: 2px; }
+.glitch-effect::after { top: 2px; left: -2px; color: #00FFFF; }
+.input-cyber { background: #1E1E1E; border: 2px solid #8A2BE2; color: #fff; border-radius: 0.5rem; padding: 0.5rem 1rem; width: 100%; margin-bottom: 1rem; transition: box-shadow 0.2s; }
+.input-cyber:focus { outline: none; box-shadow: 0 0 8px #39FF14, 0 0 16px #8A2BE2; }
+.btn-cyber { background: #8A2BE2; color: #fff; font-weight: bold; padding: 0.75rem 2rem; border-radius: 0.5rem; box-shadow: 0 0 8px #8A2BE2, 0 0 16px #39FF14; transition: all 0.2s; }
+.btn-cyber:hover { background: #6A1CB2; box-shadow: 0 0 16px #FF00FF, 0 0 32px #39FF14; }
+.card-cyber { background: #2C2C2C; border-radius: 1rem; box-shadow: 0 0 8px #8A2BE2; padding: 2rem; }
+.bg-dark { background: #121212 !important; }
+.bg-dark\.light { background: #2C2C2C !important; }
+.bg-dark\.lighter { background: #1E1E1E !important; }
+.font-cyber { font-family: 'Share Tech Mono', monospace; }
+.font-sans { font-family: 'Rajdhani', sans-serif; } 

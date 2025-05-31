@@ -268,62 +268,48 @@ const DoctorDashboard = () => {
     };
 
     if (loading) return (
-        <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-            fontSize: '1.2rem',
-            color: '#666'
-        }}>
+        <div className="min-h-screen flex items-center justify-center bg-dark font-sans text-xl text-gray-400">
             Chargement...
         </div>
     );
 
     if (error) return (
-        <div style={{
-            color: '#dc3545',
-            padding: '20px',
-            textAlign: 'center',
-            fontSize: '1.1rem'
-        }}>
-            {error}
+        <div className="min-h-screen flex items-center justify-center bg-dark font-sans">
+            <div className="text-center font-bold text-red-500 text-lg p-8 bg-dark.light neon-border rounded-xl">{error}</div>
         </div>
     );
 
     return (
-        <div style={styles.container}>
-            <h1 style={styles.title}>Tableau de bord Médecin</h1>
+        <div className="min-h-screen bg-dark.lighter p-8 font-sans">
+            <h1 className="text-3xl neon-text font-cyber mb-10 glitch-effect" data-text="Tableau de bord Médecin">Tableau de bord Médecin</h1>
 
-            <div style={styles.section}>
-                <h2 style={styles.sectionTitle}>Rendez-vous</h2>
-                <div style={styles.tableContainer}>
-                    <table style={styles.table}>
+            <div className="card-cyber neon-border mb-10">
+                <h2 className="text-2xl neon-text font-cyber mb-6 glitch-effect" data-text="Rendez-vous">Rendez-vous</h2>
+                <div className="overflow-x-auto">
+                    <table className="w-full neon-border bg-dark.light text-text.light rounded-xl overflow-hidden">
                         <thead>
                             <tr>
-                                <th style={styles.tableHeader}>Date</th>
-                                <th style={styles.tableHeader}>Heure</th>
-                                <th style={styles.tableHeader}>Patient</th>
-                                <th style={styles.tableHeader}>Statut</th>
-                                <th style={styles.tableHeader}>Actions</th>
+                                <th className="py-2 px-4 neon-text">Date</th>
+                                <th className="py-2 px-4 neon-text">Heure</th>
+                                <th className="py-2 px-4 neon-text">Patient</th>
+                                <th className="py-2 px-4 neon-text">Statut</th>
+                                <th className="py-2 px-4 neon-text">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {appointments.map(appointment => (
-                                <tr key={appointment.id} style={styles.tableRow}>
-                                    <td style={styles.tableCell}>{new Date(appointment.date).toLocaleDateString()}</td>
-                                    <td style={styles.tableCell}>{appointment.start_time}</td>
-                                    <td style={styles.tableCell}>
+                                <tr key={appointment.id} className="hover:bg-dark.lighter transition">
+                                    <td className="py-2 px-4">{new Date(appointment.date).toLocaleDateString()}</td>
+                                    <td className="py-2 px-4">{appointment.start_time}</td>
+                                    <td className="py-2 px-4">
                                         {patients.find(p => p.id === appointment.patient)?.first_name} {patients.find(p => p.id === appointment.patient)?.last_name}
                                     </td>
-                                    <td style={styles.tableCell}>
-                                        <span style={styles.status[appointment.status]}>
-                                            {appointment.status}
-                                        </span>
+                                    <td className="py-2 px-4">
+                                        <span className={`px-3 py-1 rounded font-bold ${appointment.status === 'PENDING' ? 'bg-yellow-500 text-white' : appointment.status === 'CONFIRMED' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>{appointment.status}</span>
                                     </td>
-                                    <td style={styles.tableCell}>
+                                    <td className="py-2 px-4">
                                         {appointment.status === 'PENDING' && (
-                                            <div style={styles.buttonGroup}>
+                                            <div className="flex gap-2 justify-center">
                                                 {/* Aucun bouton pour le médecin */}
                                             </div>
                                         )}
@@ -335,28 +321,28 @@ const DoctorDashboard = () => {
                 </div>
             </div>
 
-            <div style={styles.section}>
-                <h2 style={styles.sectionTitle}>Patients</h2>
-                <div style={styles.tableContainer}>
-                    <table style={styles.table}>
+            <div className="card-cyber neon-border">
+                <h2 className="text-2xl neon-text font-cyber mb-6 glitch-effect" data-text="Patients">Patients</h2>
+                <div className="overflow-x-auto">
+                    <table className="w-full neon-border bg-dark.light text-text.light rounded-xl overflow-hidden">
                         <thead>
                             <tr>
-                                <th style={styles.tableHeader}>Nom</th>
-                                <th style={styles.tableHeader}>Email</th>
-                                <th style={styles.tableHeader}>Téléphone</th>
-                                <th style={styles.tableHeader}>Actions</th>
+                                <th className="py-2 px-4 neon-text">Nom</th>
+                                <th className="py-2 px-4 neon-text">Email</th>
+                                <th className="py-2 px-4 neon-text">Téléphone</th>
+                                <th className="py-2 px-4 neon-text">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {patients.map(patient => (
-                                <tr key={`patient-${patient.id}`} style={styles.tableRow}>
-                                    <td style={styles.tableCell}>{patient.first_name} {patient.last_name}</td>
-                                    <td style={styles.tableCell}>{patient.email}</td>
-                                    <td style={styles.tableCell}>{patient.phone}</td>
-                                    <td style={styles.tableCell}>
+                                <tr key={`patient-${patient.id}`} className="hover:bg-dark.lighter transition">
+                                    <td className="py-2 px-4">{patient.first_name} {patient.last_name}</td>
+                                    <td className="py-2 px-4">{patient.email}</td>
+                                    <td className="py-2 px-4">{patient.phone}</td>
+                                    <td className="py-2 px-4">
                                         <button
+                                            className="btn-cyber"
                                             onClick={() => navigate(`/patient/${patient.id}`)}
-                                            style={styles.secondaryButton}
                                         >
                                             Voir le dossier médical
                                         </button>

@@ -36,20 +36,26 @@ const PatientDashboard = () => {
     const patientId = localStorage.getItem('user_id');
 
     return (
-        <div style={styles.container}>
-            <div style={styles.title}>Bienvenue sur votre espace patient</div>
-            <button
-                style={styles.button}
-                onClick={() => navigate(`/patient/${patientId}`)}
-            >
-                Voir mon dossier médical
-            </button>
-            <button
-                style={styles.button}
-                onClick={() => navigate('/patient/appointment-request')}
-            >
-                Demander un rendez-vous
-            </button>
+        <div className="min-h-screen flex items-center justify-center bg-dark font-sans">
+            <div className="bg-dark.light neon-border p-10 rounded-xl shadow-xl w-full max-w-xl text-center">
+                <div className="text-3xl neon-text font-cyber mb-10 glitch-effect" data-text="Bienvenue sur votre espace patient">
+                    Bienvenue sur votre espace patient
+                </div>
+                <div className="flex flex-col md:flex-row justify-center gap-6">
+                    <button
+                        className="btn-cyber"
+                        onClick={() => navigate(`/patient/${patientId}`)}
+                    >
+                        Voir mon dossier médical
+                    </button>
+                    <button
+                        className="btn-cyber"
+                        onClick={() => navigate('/patient/appointment-request')}
+                    >
+                        Demander un rendez-vous
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
